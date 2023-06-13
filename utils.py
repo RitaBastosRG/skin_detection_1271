@@ -64,6 +64,11 @@ def get_ground_truth_data(number=80):
 
     return result
 
+def load_processed_balanced_data():
+    # set data source
+    data_url = 'processed_data/ISIC_2019_Training_GroundTruth_processed_balanced.csv'
+    data = pd.read_csv(data_url)
+    return data
 # Helper functions to pre-process images
 
 # Display an image with circle
