@@ -7,6 +7,7 @@ import os
 from PIL import Image
 
 categories= ['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC']
+
 sizes =     [0.15,  0.25, 0.15,  0.10, 0.15,  0.05,  0.05,  0.10]
 
 # Helper functions to load meta data
@@ -159,7 +160,7 @@ def detect_black_coners(image: Image):
     # print(f'No black corner detected')
     return -1
 
-def remove_black_cornors(image, radius):
+def remove_black_cornors(image, radius) -> Image:
     width, height=image.size
     # if radius<width//2:
     new_width=int(radius*np.sqrt(2))
