@@ -1,2 +1,4 @@
-raw_data
 .ipynb_checkpoints/
+raw_data/
+.DS_Store
+__pycache__/
