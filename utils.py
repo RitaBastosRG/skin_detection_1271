@@ -114,7 +114,7 @@ def display_image_with_circle(image, radius, ax):
 
     if radius>0:
         # Create a Circle object
-        circle = Circle(center, radius, fill=False, color='red', linewidth=3)
+        circle = Circle(center, radius, fill=False, color='#FF0000', linewidth=5)
 
         # Add the circle to the plot
         ax.add_patch(circle)
