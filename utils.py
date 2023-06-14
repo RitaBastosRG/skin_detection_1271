@@ -7,13 +7,12 @@ import os
 from PIL import Image
 
 categories= ['MEL', 'NV', 'BCC', 'AK', 'BKL', 'DF', 'VASC', 'SCC']
-
 sizes =     [0.15,  0.25, 0.15,  0.10, 0.15,  0.05,  0.05,  0.10]
 
-# Helper functions to load meta data
+####### Helper functions to load meta data#######
 def load_raw_data():
     # set data source
-    data_url = 'raw_data/ISIC_2019_Training_GroundTruth.csv'
+    data_url = '../raw_data/ISIC_2019_Training_GroundTruth.csv'
     data = pd.read_csv(data_url)
     # Added a Cat column for conviniences
     data['Cat']=''
@@ -66,14 +65,17 @@ def get_ground_truth_data(number=80):
 
 def load_processed_balanced_data():
     # set data source
-    data_url = 'processed_data/ISIC_2019_Training_GroundTruth_processed_balanced.csv'
+    data_url = '../processed_data/ISIC_2019_Training_GroundTruth_processed_balanced.csv'
     data = pd.read_csv(data_url)
     return data
-# Helper functions to pre-process images
 
-# Display an image with circle
+
+####### Helper functions to pre-process images#######
+
 def display_image(image: Image, ax, radius=-1):
-
+    """
+    Display an image with circle
+    """
     # Display the image
     # Create an ImageDraw object
     ax.imshow(image)
@@ -84,9 +86,10 @@ def display_image(image: Image, ax, radius=-1):
         # print(width, center, radius)
         ax.Circle((center, center), radius, color='red')
 
-
-# Display images
 def display_images(*images):
+    """
+    Display multiple images
+    """
     fig, axes = plt.subplots(1, len(images))
 
     for i, ax in enumerate(axes):
@@ -95,8 +98,10 @@ def display_images(*images):
 
     plt.show()
 
-# Display an image with a circle
 def display_image_with_circle(image, radius, ax):
+    """
+    Display an image with a circle
+    """
 # Get image dimensions and calculate the center point
     height, width = image.size
     center = (width // 2, height // 2)
@@ -109,7 +114,7 @@ def display_image_with_circle(image, radius, ax):
 
     if radius>0:
         # Create a Circle object
-        circle = Circle(center, radius, fill=False, color='red', linewidth=3)
+        circle = Circle(center, radius, fill=False, color='#FF0000', linewidth=5)
 
         # Add the circle to the plot
         ax.add_patch(circle)
@@ -120,8 +125,10 @@ def display_image_with_circle(image, radius, ax):
     # # Display the plot
     # plt.show()
 
-# crop image to sqare
-def square_image(image: Image):
+def square_image(image: Image)->Image:
+    """
+    crop image to sqare
+    """
     width, height = image.size
     # Determine the size of the square crop
     size = min(width, height)
@@ -137,16 +144,24 @@ def square_image(image: Image):
 
     return squared_image
 
-# return the radius of the circle if detected black coner
-# otherwise, return -1
-# This function needs to be improved for better accuracy if needed
+def detect_black_coners(image: Image)->int:
+    """
+    return the radius of the circle if detected black coner, otherwise, return -1
+    This function needs to be improved for better accuracy if needed
+    Args:
+        image (Image): The image object which may have black corners.
 
-def detect_black_coners(image: Image):
+    Returns:
+        int: the radius of circle where is the the black corners from
+    """
     width, height=image.size
-    scope=width//4
-    step=3
+    scope=min(width, height)//4 # the minimum radius to search for
+    step=3  # for better searching performance
     margin=0.98
-    image = square_image(image)
+
+    if width!=height:
+        image = square_image(image)
+
     b_w_image = image.convert('L')
     for i in range(1, scope, step):
         left=i;right=width-i; top=i; bottom=height-i
@@ -165,23 +180,22 @@ def detect_black_coners(image: Image):
     # print(f'No black corner detected')
     return -1
 
-def remove_black_cornors(image, radius) -> Image:
+def remove_black_corners(image, radius) -> Image:
+    """
+    This function remove the black corners of an image
+
+    Args:
+        image: The image object to which has black corners.
+        radius: the readius of the black corners
+
+    Returns:
+        image: image object which the black corners have been removed.
+    """
     width, height=image.size
-    # if radius<width//2:
+
     new_width=int(radius*np.sqrt(2))
     x = (width-new_width)//2
     crop_area=(x, x, width-x, width-x)
     image = image.crop(crop_area)
+
     return image
-
-#####################SAMMPLE CODE TO USE THE FUNCTIONS########################
-# image_samples= get_ground_truth_data(50)
-# for i in range(image_samples.shape[0]):
-#     sample=image_samples.loc[i]
-#     image_file_name=f"{os.path.sep.join(['raw_data', sample.Cat, sample.image])}.jpg"
-
-#     image = Image.open(image_file_name)
-#     image = square_image(image)
-#     radius = detect_black_coners(image)
-#     display_image_with_circle(image, radius)
-#####################SAMMPLE CODE TO USE THE FUNCTIONS########################
