@@ -4,8 +4,8 @@
 
 
 from PIL import Image
-from utils import *
-from tensorflow import keras
+from skin_detection.interface.utils import *
+import tensorflow.keras as keras
 
 MODEL_NAME = 'model_dummy'
 
@@ -17,7 +17,8 @@ def get_dummy_image()->Image:
 def load_model():
     model_file_name = f'skin_detection/model/{MODEL_NAME}'
 
-    model = keras.models.load_model(model_file_name)
+    model = keras.models.load_model(model_file_name, compile=False)
+    model.compile()
 
     return model
 
@@ -56,7 +57,9 @@ if __name__ == '__main__':
     import os
 
     current_path = os.getcwd()
+    print("======================================")
     print("Current path:", current_path)
+    print("======================================")
 
     pred()
 
