@@ -29,7 +29,7 @@ def preprocess_features(image: Image):
         image=remove_black_corners(image, radius=radius)
     return image
 
-def pred(image=None):
+def pred(model=None, image=None):
     """
     Make a prediction using the latest trained model
     """
@@ -40,8 +40,10 @@ def pred(image=None):
     image = image.resize((400,400),resample=Image.BILINEAR)
     X_pred = np.asarray(image, dtype=np.float32)
     X_pred = np.expand_dims(X_pred, axis=0)
+
     model = load_model()
-    assert model is not None
+    if model is None:
+        model = load_model()
 
     y_pred = model.predict(X_pred)
     for y in y_pred:
