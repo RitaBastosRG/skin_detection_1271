@@ -1,49 +1,71 @@
 # file for the functions
-import sys
-sys.path.append("..")
+# import sys
+# sys.path.append("..")
 
-import pickle
 
-# package for image processing and display
 from PIL import Image
-
-# helper functions defined in the utils module
 from utils import *
+from tensorflow import keras
 
 MODEL_NAME = 'model_dummy'
 
+def get_dummy_image()->Image:
+    image_file_name='raw_data/SCC/ISIC_0024329.jpg'
+    image = Image.open(image_file_name)
+    return image
+
 def load_model():
-    file_name = f'../model/{MODEL_NAME}.pickle'
-    with open(file_name, 'rb') as file:
-        model = pickle.load(file)
+    model_file_name = f'model/{MODEL_NAME}'
+
+    model = keras.models.load_model(model_file_name)
 
     return model
 
 def preprocess_features(image: Image):
+
     image = square_image(image)
     radius = detect_black_coners(image)
     if radius> 0:
         image=remove_black_corners(image, radius=radius)
     return image
 
-def pred(X_pred: Image):
+def pred(image=None):
     """
     Make a prediction using the latest trained model
     """
+    if image is None:
+        image = get_dummy_image()
 
-    print("\n⭐️ Use case: predict")
-
-    if X_pred is None:
-        pass
-
-    model = load_model(MODEL_NAME)
+    image = preprocess_features(image)
+    image = image.resize((400,400),resample=Image.BILINEAR)
+    X_pred = np.asarray(image, dtype=np.float32)
+    X_pred = np.expand_dims(X_pred, axis=0)
+    model = load_model()
     assert model is not None
 
-    X_processed = preprocess_features(X_pred)
-    y_pred = model.predict(X_processed)
-
-    print("\n✅ prediction done: {} is your possibility of skin cancer \n")
+    y_pred = model.predict(X_pred)
+    for y in y_pred:
+        p=y[0]
+        if p<0.5:
+            print(f"\n✅ your possibility of skin cancer is {np.round(p*100, 2)}% ✅\n")
+        if p>0.5:
+            print(f"\n❌ {np.round(p*100, 2)}% chance of cancer. You are screwed ❌\n")
     return y_pred
 
 if __name__ == '__main__':
+
     pred()
+
+    # image_file_name='raw_data/SCC/ISIC_0024329.jpg'
+    # image = Image.open(image_file_name)
+    # plt.imshow(image)
+    # plt.show()
+    # print(image.size)
+    # image = preprocess_features(image)
+    # print (image.size)
+    # image = image.resize((400,400),resample=Image.BILINEAR)
+    # print (image.size)
+    # X_pred = np.asarray(image, dtype=np.float32)
+    # print(X_pred.shape)
+    # X_pred = np.expand_dims(X_pred, axis=0)
+    # print(X_pred.shape)
