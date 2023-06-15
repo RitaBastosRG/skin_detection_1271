@@ -1,7 +1,9 @@
 import pandas as pd
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from skin_detection_1271.interface.main import load_model
+from skin_detection.interface.main import load_model, get_dummy_image,pred
+from PIL import Image
+import io
 
 app = FastAPI()
 app.state.model = load_model()
@@ -15,24 +17,40 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# http://127.0.0.1:8000/predict?pickup_datetime=2012-10-06 12:10:20&pickup_longitude=40.7614327&pickup_latitude=-73.9798156&dropoff_longitude=40.6513111&dropoff_latitude=-73.8803331&passenger_count=2
+# http://127.0.0.1:8000/predict
 @app.get("/predict")
 def predict(
     ):      # 1
     """
     Make a single course prediction.
     """
-    X_pred=None
-    y_pred = app.state.model.predict(preprocess_features(X_pred))[0][0]
+    image=get_dummy_image()
+    y_pred = pred(image)[0][0]
 
     response = {
-        'fare_amount': float(y_pred)
+        'possibility': float(y_pred)
         }
     return response
 
+# http://127.0.0.1:8000
 @app.get("/")
 def root():
     response = {
-        'greeting': 'Hello'
+        'greeting': 'Welcome to Skin Detection Website'
+        }
+    return response
+
+"http://localhost:8000/upload-image/"
+@app.post("/upload-image")
+async def upload_image(file: UploadFile = UploadFile(...)):
+    contents = await file.read()
+    image = Image.open(io.BytesIO(contents))
+
+    # image=get_dummy_image()
+    y_pred = pred(image)[0][0]
+
+    response = {
+        "filename": file.filename,
+        'possibility': float(y_pred)
         }
     return response

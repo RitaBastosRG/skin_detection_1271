@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Upload</title>
+    <style>
+      #image-container img {
+          max-width: 300px;
+          max-height: 300px;
+      }
+  </style>
+</head>
+<body>
+    <form id="image-upload-form">
+        <input type="file" id="image-input" name="file" accept="image/*">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="response-container"></div>
+    <div id="image-container"></div>
+    <script>
+        document.getElementById("image-upload-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var formData = new FormData();
+            var fileInput = document.getElementById("image-input");
+            formData.append("file", fileInput.files[0]);
+
+            fetch("http://localhost:8000/upload-image/", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // Update the response container with the filename and possibility
+                var responseContainer = document.getElementById("response-container");
+                responseContainer.innerText = "Uploaded filename: " + data.filename + "\n";
+                responseContainer.innerText += "Possibility: " + data.possibility;
+
+                // Display the uploaded image
+                var imageContainer = document.getElementById("image-container");
+                var imgElement = document.createElement("img");
+                imgElement.src = URL.createObjectURL(fileInput.files[0]);
+                imageContainer.appendChild(imgElement);
+            })
+            .catch(error => {
+                console.error(error);
+                // Handle any errors that occur during the upload process
+            });
+        });
+    </script>
+</body>
+</html>
