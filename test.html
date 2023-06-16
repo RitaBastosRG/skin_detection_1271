@@ -1,52 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Image Upload</title>
-    <style>
-      #image-container img {
-          max-width: 300px;
-          max-height: 300px;
-      }
-  </style>
+  <title>Image Upload</title>
 </head>
 <body>
-    <form id="image-upload-form">
-        <input type="file" id="image-input" name="file" accept="image/*">
-        <button type="submit">Upload</button>
-    </form>
-    <div id="response-container"></div>
-    <div id="image-container"></div>
-    <script>
-        document.getElementById("image-upload-form").addEventListener("submit", function (event) {
-            event.preventDefault();
+  <h1>Image Upload</h1>
 
-            var formData = new FormData();
-            var fileInput = document.getElementById("image-input");
-            formData.append("file", fileInput.files[0]);
+  <form id="upload-form" enctype="multipart/form-data">
+    <input type="file" id="image-input" name="image" accept="image/*" />
+    <img id="preview-image" style="max-width: 400px; max-height: 400px;" />
+    <button type="button" id="upload-button">Upload</button>
+  </form>
 
-            fetch("http://localhost:8000/upload-image/", {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                // Update the response container with the filename and possibility
-                var responseContainer = document.getElementById("response-container");
-                responseContainer.innerText = "Uploaded filename: " + data.filename + "\n";
-                responseContainer.innerText += "Possibility: " + data.possibility;
+  <div id="response-container"></div>
 
-                // Display the uploaded image
-                var imageContainer = document.getElementById("image-container");
-                var imgElement = document.createElement("img");
-                imgElement.src = URL.createObjectURL(fileInput.files[0]);
-                imageContainer.appendChild(imgElement);
-            })
-            .catch(error => {
-                console.error(error);
-                // Handle any errors that occur during the upload process
-            });
+  <script>
+    document.getElementById("upload-button").addEventListener("click", function() {
+      var formData = new FormData();
+      var imageInput = document.getElementById("image-input");
+      var file = imageInput.files[0];
+
+      if (file) {
+        formData.append("file", file);  // Updated form field name
+
+        // var base_url= "http://localhost:8000/upload-image/";  // Update the URL
+        var base_url = "https://skindetection-hsuizqzdtq-ew.a.run.app/upload-image/"
+        fetch(base_url, {
+          method: "POST",
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          var responseContainer = document.getElementById("response-container");
+          responseContainer.innerText = "Uploaded filename: " + data.filename + "\n";
+          responseContainer.innerText += "Possibility: " + data.possibility;
+        })
+        .catch(error => {
+          console.error("Error:", error);
         });
-    </script>
+      }
+    });
+
+    document.getElementById("image-input").addEventListener("change", function() {
+      var imageInput = document.getElementById("image-input");
+      var file = imageInput.files[0];
+
+      if (file) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          var previewImage = document.getElementById("preview-image");
+          previewImage.src = e.target.result;
+        }
+
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+
 </body>
 </html>
