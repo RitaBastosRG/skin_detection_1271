@@ -42,7 +42,7 @@ def root():
 
 "http://localhost:8000/upload-image/"
 @app.post("/upload-image")
-async def upload_image(file: UploadFile = UploadFile(...)):
+async def upload_image(file: UploadFile = File(...)):
     contents = await file.read()
     image = Image.open(io.BytesIO(contents))
 
