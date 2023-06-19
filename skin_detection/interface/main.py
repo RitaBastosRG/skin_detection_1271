@@ -1,13 +1,8 @@
-# file for the functions
-# import sys
-# sys.path.append("..")
-
-
 from PIL import Image
 from skin_detection.interface.utils import *
 import tensorflow.keras as keras
 
-MODEL_NAME = 'model_dummy'
+MODEL_NAME = 'resnet_model_4.h5'
 
 def get_dummy_image()->Image:
     image_file_name='raw_data/SCC/ISIC_0024329.jpg'
