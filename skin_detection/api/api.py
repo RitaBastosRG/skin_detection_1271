@@ -47,7 +47,7 @@ async def upload_image(file: UploadFile = File(...)):
     image = Image.open(io.BytesIO(contents))
 
     # image=get_dummy_image()
-    y_pred = pred(image)[0][0]
+    y_pred = 1 - pred(image, app.state.model)[0][0]
 
     response = {
         "filename": file.filename,
