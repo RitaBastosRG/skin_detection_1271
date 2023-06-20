@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := default
 #################### PACKAGE ACTIONS ###################
 reinstall_package:
-	@pip uninstall -y taxifare || :
+	@pip uninstall -y skin_detection || :
 	@pip install -e .
 
 run_api:
