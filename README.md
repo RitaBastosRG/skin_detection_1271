@@ -4,7 +4,7 @@
 The goal of the application is to raise awareness of skin cancer and to guide users to make a right decision, such as consulting a dermatologist or keeping an eye on the development of the mole.</p>
 
 <h2 style='text-align: left'>Application:</h2>
-<a href='https://skin-scancer.streamlit.app/'>Rita Bastos</a>
+Here is the <a href='https://skin-scancer.streamlit.app/'>link</a>
 
 <h2 style='text-align: left'>Team Members:</h2>
             <ul stype='font-size:5;'>
