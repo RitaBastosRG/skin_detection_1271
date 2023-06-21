@@ -5,4 +5,3 @@ __pycache__/
 processed_data/
 skin_detection.egg-info/
 model/
-images/
